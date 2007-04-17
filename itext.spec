@@ -3,24 +3,31 @@
 
 Summary:        A Free Java-PDF library
 Name:           itext
-Version:        1.4.8
+Version:        2.0.2
 Release:        %mkrel 1
 Epoch:          0
 License:        LGPL
 URL:            http://www.lowagie.com/iText/
 Group:          Development/Java
 Source0:        http://ovh.dl.sourceforge.net/itext/itext-src-%{version}.tar.gz
-Source1:        itext-www-1.4.tar.bz2
+Source1:        itext-www-20070221.tar.bz2
 Source2:        itext-1.4-manifest.mf
 Patch0:         itext-escape-jpeg-java-trap.patch
+Patch1:         itext-2.0.2-no-get.patch
+Requires:       bouncycastle-jdk1.4 >= 0:1.35
 BuildRequires:  jpackage-utils >= 0:1.6
-BuildRequires:  ant, ant-trax, xalan-j2
+BuildRequires:  ant
+BuildRequires:  ant-trax
+BuildRequires:  bouncycastle-jdk1.4 >= 0:1.35
+BuildRequires:  xalan-j2
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 %if %{gcj_support}
 BuildRequires:    java-gcj-compat-devel
 Requires(post):   java-gcj-compat
 Requires(postun): java-gcj-compat
 %else
+BuildRequires:  java-devel >= 0:1.4.2
+BuildRequires:  java-devel <= 0:1.5.0
 BuildArch:      noarch
 %endif
 
@@ -32,7 +39,6 @@ images. The library is especially useful in combination with Java(TM)
 technology-based Servlets: The look and feel of HTML is browser 
 dependent; with iText and PDF you can control exactly how your servlet's 
 output will look.
-
 
 %package javadoc
 Summary:        Javadoc for %{name}
@@ -49,7 +55,7 @@ Group:          Development/Java
 A programming manual for the %{name} package.
 
 %prep
-%setup -q -c -T -n %{name}
+%setup -q -c -T -n itext
 find . -type d -name CVS | xargs %{__rm} -rf
 mkdir -p src/META-INF
 (cd src
@@ -58,13 +64,14 @@ cp %{SOURCE2} src/META-INF/MANIFEST.MF
 %{__tar} xf %{SOURCE1}
 find . -name "*.jar" -exec rm {} \;
 %patch0 -p0
+%patch1 -p1
 %{__perl} -pi -e 's/<link.*$//' src/ant/site.xml
 
 %build
 pushd src
-export CLASSPATH=
+export CLASSPATH=$(build-classpath bcprov-jdk14 bcmail-jdk14)
 export OPT_JAR_LIST="ant/ant-trax xalan-j2 xalan-j2-serializer"
-%ant jar javadoc tutorial lowagie.com
+%{ant} jar javadoc tutorial lowagie.com
 popd
 
 %install
@@ -122,7 +129,3 @@ rm -rf $RPM_BUILD_ROOT
 %files manual
 %defattr(0644,root,root,0755)
 %doc %{_docdir}/*
-
-# -----------------------------------------------------------------------------
-
-
