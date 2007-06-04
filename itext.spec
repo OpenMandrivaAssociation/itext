@@ -3,7 +3,7 @@
 
 Summary:        A Free Java-PDF library
 Name:           itext
-Version:        2.0.2
+Version:        2.0.4
 Release:        %mkrel 1
 Epoch:          0
 License:        LGPL
@@ -13,7 +13,6 @@ Source0:        http://ovh.dl.sourceforge.net/itext/itext-src-%{version}.tar.gz
 Source1:        itext-www-20070221.tar.bz2
 Source2:        itext-1.4-manifest.mf
 Patch0:         itext-escape-jpeg-java-trap.patch
-Patch1:         itext-2.0.2-no-get.patch
 Requires:       bouncycastle-jdk1.4 >= 0:1.35
 BuildRequires:  jpackage-utils >= 0:1.6
 BuildRequires:  ant
@@ -64,10 +63,12 @@ cp %{SOURCE2} src/META-INF/MANIFEST.MF
 %{__tar} xf %{SOURCE1}
 find . -name "*.jar" -exec rm {} \;
 %patch0 -p0
-%patch1 -p1
 %{__perl} -pi -e 's/<link.*$//' src/ant/site.xml
+%{__perl} -pi -e 's/<attribute name="Class-Path".*$//' src/ant/compile.xml
+%{__perl} -pi -e 's/\r$//g' www/examples/com/lowagie/examples/forms/fill/register.xfdf
 
 %build
+%{__mkdir_p} lib
 pushd src
 export CLASSPATH=$(build-classpath bcprov-jdk14 bcmail-jdk14)
 export OPT_JAR_LIST="ant/ant-trax xalan-j2 xalan-j2-serializer"
@@ -75,13 +76,13 @@ export OPT_JAR_LIST="ant/ant-trax xalan-j2 xalan-j2-serializer"
 popd
 
 %install
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 # jars
-mkdir -p $RPM_BUILD_ROOT%{_javadir}
-cp -p build/bin/iText.jar \
-      $RPM_BUILD_ROOT%{_javadir}/%{name}-%{version}.jar
-(cd $RPM_BUILD_ROOT%{_javadir} && for jar in *-%{version}.jar; do ln -sf ${jar} `echo $jar| sed "s|-%{version}||g"`; done)
+mkdir -p %{buildroot}%{_javadir}
+%{__cp} -a lib/iText.jar \
+      %{buildroot}%{_javadir}/%{name}-%{version}.jar
+(cd %{buildroot}%{_javadir} && for jar in *-%{version}.jar; do ln -sf ${jar} `echo $jar| sed "s|-%{version}||g"`; done)
 
 %if %{gcj_support}
 %{_bindir}/aot-compile-rpm
@@ -92,17 +93,17 @@ cp -p build/bin/iText.jar \
 %{__perl} -pi -e 's/\r$//g' build/lowagie/ant/.ant.properties
 
 # javadoc
-mkdir -p $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
-cp -pr build/docs/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
+mkdir -p %{buildroot}%{_javadocdir}/%{name}-%{version}
+%{__cp} -a build/docs/* %{buildroot}%{_javadocdir}/%{name}-%{version}
 
 # manual
-mkdir -p $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-cp -a build/lowagie/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-cp -a build/examples $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-cp -a build/tutorial $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
+mkdir -p %{buildroot}%{_docdir}/%{name}-%{version}
+cp -a build/lowagie/* %{buildroot}%{_docdir}/%{name}-%{version}
+cp -a build/examples %{buildroot}%{_docdir}/%{name}-%{version}
+cp -a build/tutorial %{buildroot}%{_docdir}/%{name}-%{version}
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %if %{gcj_support}
 %post
