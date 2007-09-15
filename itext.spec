@@ -4,7 +4,7 @@
 Summary:        A Free Java-PDF library
 Name:           itext
 Version:        2.0.4
-Release:        %mkrel 2
+Release:        %mkrel 3
 Epoch:          0
 License:        LGPL
 URL:            http://www.lowagie.com/iText/
@@ -22,8 +22,6 @@ BuildRequires:  xalan-j2
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 %if %{gcj_support}
 BuildRequires:    java-gcj-compat-devel
-Requires(post):   java-gcj-compat
-Requires(postun): java-gcj-compat
 %else
 BuildRequires:  java-devel >= 0:1.4.2
 BuildRequires:  java-devel <= 0:1.5.0
