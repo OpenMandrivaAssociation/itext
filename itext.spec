@@ -1,32 +1,30 @@
 %define section free
 %define gcj_support 1
 
-Summary:        A Free Java-PDF library
 Name:           itext
-Version:        2.0.4
-Release:        %mkrel 3
+Version:        2.0.5
+Release:        %mkrel 1
 Epoch:          0
 License:        LGPL
+Summary:        A Free Java-PDF library
 URL:            http://www.lowagie.com/iText/
 Group:          Development/Java
 Source0:        http://ovh.dl.sourceforge.net/itext/itext-src-%{version}.tar.gz
 Source1:        itext-www-20070221.tar.bz2
 Source2:        itext-1.4-manifest.mf
-Patch0:         itext-escape-jpeg-java-trap.patch
-Requires:       bouncycastle-jdk1.4 >= 0:1.35
-BuildRequires:  jpackage-utils >= 0:1.6
+Requires:       bouncycastle-jdk1.4
+BuildRequires:  jpackage-utils
 BuildRequires:  ant
 BuildRequires:  ant-trax
-BuildRequires:  bouncycastle-jdk1.4 >= 0:1.35
+BuildRequires:  bouncycastle-jdk1.4
 BuildRequires:  xalan-j2
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 %if %{gcj_support}
 BuildRequires:    java-gcj-compat-devel
 %else
-BuildRequires:  java-devel >= 0:1.4.2
-BuildRequires:  java-devel <= 0:1.5.0
+BuildRequires:  java-devel
 BuildArch:      noarch
 %endif
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 
 %description
 iText is a library that allows you to generate PDF files on the fly. The 
@@ -53,14 +51,12 @@ A programming manual for the %{name} package.
 
 %prep
 %setup -q -c -T -n itext
-find . -type d -name CVS | xargs %{__rm} -rf
 mkdir -p src/META-INF
 (cd src
 %{__tar} xf %{SOURCE0})
 cp %{SOURCE2} src/META-INF/MANIFEST.MF
 %{__tar} xf %{SOURCE1}
 find . -name "*.jar" -exec rm {} \;
-%patch0 -p0
 %{__perl} -pi -e 's/<link.*$//' src/ant/site.xml
 %{__perl} -pi -e 's/<attribute name="Class-Path".*$//' src/ant/compile.xml
 %{__perl} -pi -e 's/\r$//g' www/examples/com/lowagie/examples/forms/fill/register.xfdf
