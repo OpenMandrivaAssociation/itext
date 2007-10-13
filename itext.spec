@@ -2,7 +2,7 @@
 %define gcj_support 1
 
 Name:           itext
-Version:        2.0.5
+Version:        2.0.6
 Release:        %mkrel 1
 Epoch:          0
 License:        LGPL
@@ -19,7 +19,7 @@ BuildRequires:  ant-trax
 BuildRequires:  bouncycastle-jdk1.4
 BuildRequires:  xalan-j2
 %if %{gcj_support}
-BuildRequires:    java-gcj-compat-devel
+BuildRequires:  java-gcj-compat-devel
 %else
 BuildRequires:  java-devel
 BuildArch:      noarch
