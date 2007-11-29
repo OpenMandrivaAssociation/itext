@@ -2,14 +2,14 @@
 %define gcj_support 1
 
 Name:           itext
-Version:        2.0.6
-Release:        %mkrel 1
+Version:        2.0.7
+Release:        %mkrel 0.0.1
 Epoch:          0
 License:        LGPL
 Summary:        A Free Java-PDF library
 URL:            http://www.lowagie.com/iText/
 Group:          Development/Java
-Source0:        http://ovh.dl.sourceforge.net/itext/itext-src-%{version}.tar.gz
+Source0:        http://ovh.dl.sourceforge.net/itext/iText-src-%{version}.tar.gz
 Source1:        itext-www-20070221.tar.bz2
 Source2:        itext-1.4-manifest.mf
 Requires:       bouncycastle-jdk1.4
