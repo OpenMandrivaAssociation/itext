@@ -3,7 +3,7 @@
 
 Name:           itext
 Version:        2.0.7
-Release:        %mkrel 0.0.1
+Release:        %mkrel 0.0.2
 Epoch:          0
 License:        LGPL
 Summary:        A Free Java-PDF library
@@ -13,7 +13,7 @@ Source0:        http://ovh.dl.sourceforge.net/itext/iText-src-%{version}.tar.gz
 Source1:        itext-www-20070221.tar.bz2
 Source2:        itext-1.4-manifest.mf
 Requires:       bouncycastle-jdk1.4
-BuildRequires:  jpackage-utils
+BuildRequires:  java-rpmbuild
 BuildRequires:  ant
 BuildRequires:  ant-trax
 BuildRequires:  bouncycastle-jdk1.4
