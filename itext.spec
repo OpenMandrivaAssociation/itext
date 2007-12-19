@@ -3,7 +3,7 @@
 
 Name:           itext
 Version:        2.0.7
-Release:        %mkrel 0.0.2
+Release:        %mkrel 0.0.3
 Epoch:          0
 License:        LGPL
 Summary:        A Free Java-PDF library
@@ -12,11 +12,11 @@ Group:          Development/Java
 Source0:        http://ovh.dl.sourceforge.net/itext/iText-src-%{version}.tar.gz
 Source1:        itext-www-20070221.tar.bz2
 Source2:        itext-1.4-manifest.mf
-Requires:       bouncycastle-jdk1.4
+Requires:       bouncycastle
 BuildRequires:  java-rpmbuild
 BuildRequires:  ant
 BuildRequires:  ant-trax
-BuildRequires:  bouncycastle-jdk1.4
+BuildRequires:  bouncycastle
 BuildRequires:  xalan-j2
 %if %{gcj_support}
 BuildRequires:  java-gcj-compat-devel
@@ -50,7 +50,7 @@ A programming manual for the %{name} package.
 
 %prep
 %setup -q -c -T -n itext
-mkdir -p src/META-INF
+%{__mkdir_p} src/META-INF
 (cd src
 %{__tar} xf %{SOURCE0})
 cp %{SOURCE2} src/META-INF/MANIFEST.MF
@@ -63,16 +63,16 @@ find . -name "*.jar" -exec rm {} \;
 %build
 %{__mkdir_p} lib
 pushd src
-export CLASSPATH=$(build-classpath bcprov-jdk14 bcmail-jdk14)
+export CLASSPATH=$(build-classpath bcprov bcmail)
 export OPT_JAR_LIST="ant/ant-trax xalan-j2 xalan-j2-serializer"
 %{ant} jar javadoc tutorial lowagie.com
 popd
 
 %install
-rm -rf %{buildroot}
+%{__rm} -rf %{buildroot}
 
 # jars
-mkdir -p %{buildroot}%{_javadir}
+%{__mkdir_p} %{buildroot}%{_javadir}
 %{__cp} -a lib/iText.jar \
       %{buildroot}%{_javadir}/%{name}-%{version}.jar
 (cd %{buildroot}%{_javadir} && for jar in *-%{version}.jar; do ln -sf ${jar} `echo $jar| sed "s|-%{version}||g"`; done)
@@ -86,17 +86,18 @@ mkdir -p %{buildroot}%{_javadir}
 %{__perl} -pi -e 's/\r$//g' build/lowagie/ant/.ant.properties
 
 # javadoc
-mkdir -p %{buildroot}%{_javadocdir}/%{name}-%{version}
+%{__mkdir_p} %{buildroot}%{_javadocdir}/%{name}-%{version}
 %{__cp} -a build/docs/* %{buildroot}%{_javadocdir}/%{name}-%{version}
+(cd %{buildroot}%{_javadocdir} && %{__ln_s} %{name}-%{version} %{name})x
 
 # manual
-mkdir -p %{buildroot}%{_docdir}/%{name}-%{version}
-cp -a build/lowagie/* %{buildroot}%{_docdir}/%{name}-%{version}
-cp -a build/examples %{buildroot}%{_docdir}/%{name}-%{version}
-cp -a build/tutorial %{buildroot}%{_docdir}/%{name}-%{version}
+%{__mkdir_p} %{buildroot}%{_docdir}/%{name}-%{version}
+%{__cp} -a build/lowagie/* %{buildroot}%{_docdir}/%{name}-%{version}
+%{__cp} -a build/examples %{buildroot}%{_docdir}/%{name}-%{version}
+%{__cp} -a build/tutorial %{buildroot}%{_docdir}/%{name}-%{version}
 
 %clean
-rm -rf %{buildroot}
+%{__rm} -rf %{buildroot}
 
 %if %{gcj_support}
 %post
@@ -119,6 +120,7 @@ rm -rf %{buildroot}
 %files javadoc
 %defattr(0644,root,root,0755)
 %doc %{_javadocdir}/%{name}-%{version}
+%doc %{_javadocdir}/%{name}
 
 %files manual
 %defattr(0644,root,root,0755)
