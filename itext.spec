@@ -55,7 +55,7 @@ A programming manual for the %{name} package.
 %{__tar} xf %{SOURCE0})
 cp %{SOURCE2} src/META-INF/MANIFEST.MF
 %{__tar} xf %{SOURCE1}
-find . -name "*.jar" -exec rm {} \;
+%{_bindir}/find . -name "*.jar" | %{_bindir}/xargs -t %{__rm}
 %{__perl} -pi -e 's/<link.*$//' src/ant/site.xml
 %{__perl} -pi -e 's/<attribute name="Class-Path".*$//' src/ant/compile.xml
 %{__perl} -pi -e 's/\r$//g' www/examples/com/lowagie/examples/forms/fill/register.xfdf
@@ -73,8 +73,7 @@ popd
 
 # jars
 %{__mkdir_p} %{buildroot}%{_javadir}
-%{__cp} -a lib/iText.jar \
-      %{buildroot}%{_javadir}/%{name}-%{version}.jar
+%{__cp} -a lib/iText.jar %{buildroot}%{_javadir}/%{name}-%{version}.jar
 (cd %{buildroot}%{_javadir} && for jar in *-%{version}.jar; do ln -sf ${jar} `echo $jar| sed "s|-%{version}||g"`; done)
 
 %if %{gcj_support}
@@ -88,7 +87,7 @@ popd
 # javadoc
 %{__mkdir_p} %{buildroot}%{_javadocdir}/%{name}-%{version}
 %{__cp} -a build/docs/* %{buildroot}%{_javadocdir}/%{name}-%{version}
-(cd %{buildroot}%{_javadocdir} && %{__ln_s} %{name}-%{version} %{name})x
+(cd %{buildroot}%{_javadocdir} && %{__ln_s} %{name}-%{version} %{name})
 
 # manual
 %{__mkdir_p} %{buildroot}%{_docdir}/%{name}-%{version}
