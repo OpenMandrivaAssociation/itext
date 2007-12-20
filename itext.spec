@@ -55,7 +55,6 @@ A programming manual for the %{name} package.
 %{__tar} xf %{SOURCE0})
 cp %{SOURCE2} src/META-INF/MANIFEST.MF
 %{__tar} xf %{SOURCE1}
-%{_bindir}/find . -name "*.jar" | %{_bindir}/xargs -t %{__rm}
 %{__perl} -pi -e 's/<link.*$//' src/ant/site.xml
 %{__perl} -pi -e 's/<attribute name="Class-Path".*$//' src/ant/compile.xml
 %{__perl} -pi -e 's/\r$//g' www/examples/com/lowagie/examples/forms/fill/register.xfdf
