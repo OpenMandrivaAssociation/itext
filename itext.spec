@@ -3,16 +3,18 @@
 
 Name:           itext
 Version:        2.0.7
-Release:        %mkrel 0.0.3
+Release:        %mkrel 0.0.4
 Epoch:          0
 License:        LGPL
-Summary:        A Free Java-PDF library
+Summary:        Free Java-PDF library
 URL:            http://www.lowagie.com/iText/
 Group:          Development/Java
-Source0:        http://ovh.dl.sourceforge.net/itext/iText-src-%{version}.tar.gz
+Source0:        http://downloads.sourceforge.net/itext/iText-src-%{version}.tar.gz
 Source1:        itext-www-20070221.tar.bz2
 Source2:        itext-1.4-manifest.mf
 Requires:       bouncycastle
+Provides:       itext2 = %{epoch}:%{version}-%{release}
+Obsoletes:      itext2 < %{epoch}:%{version}-%{release}
 BuildRequires:  java-rpmbuild
 BuildRequires:  ant
 BuildRequires:  ant-trax
@@ -21,7 +23,6 @@ BuildRequires:  xalan-j2
 %if %{gcj_support}
 BuildRequires:  java-gcj-compat-devel
 %else
-BuildRequires:  java-devel
 BuildArch:      noarch
 %endif
 
@@ -63,7 +64,7 @@ cp %{SOURCE2} src/META-INF/MANIFEST.MF
 %{__mkdir_p} lib
 pushd src
 export CLASSPATH=$(build-classpath bcprov bcmail)
-export OPT_JAR_LIST="ant/ant-trax xalan-j2 xalan-j2-serializer"
+export OPT_JAR_LIST="`%{__cat} %{_sysconfdir}/ant.d/trax`"
 %{ant} jar javadoc tutorial lowagie.com
 popd
 
@@ -73,7 +74,7 @@ popd
 # jars
 %{__mkdir_p} %{buildroot}%{_javadir}
 %{__cp} -a lib/iText.jar %{buildroot}%{_javadir}/%{name}-%{version}.jar
-(cd %{buildroot}%{_javadir} && for jar in *-%{version}.jar; do ln -sf ${jar} `echo $jar| sed "s|-%{version}||g"`; done)
+(cd %{buildroot}%{_javadir} && for jar in *-%{version}.jar; do %{__ln_s} ${jar} `echo ${jar} | %{__sed} "s|-%{version}||g"`; done)
 
 %if %{gcj_support}
 %{_bindir}/aot-compile-rpm
