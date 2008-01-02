@@ -25,6 +25,7 @@ BuildRequires:  java-gcj-compat-devel
 %else
 BuildArch:      noarch
 %endif
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 
 %description
 iText is a library that allows you to generate PDF files on the fly. The 
