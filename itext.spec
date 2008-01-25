@@ -3,7 +3,7 @@
 
 Name:           itext
 Version:        2.0.8
-Release:        %mkrel 0.0.1
+Release:        %mkrel 0.0.2
 Epoch:          0
 License:        LGPL
 Summary:        Free Java-PDF library
@@ -39,6 +39,8 @@ output will look.
 %package javadoc
 Summary:        Javadoc for %{name}
 Group:          Development/Java
+Provides:       itext2-javadoc = %{epoch}:%{version}-%{release}
+Obsoletes:      itext2-javadoc < %{epoch}:%{version}-%{release}
 
 %description javadoc
 API documentation for the %{name} package.
@@ -46,6 +48,8 @@ API documentation for the %{name} package.
 %package manual
 Summary:        Documents for %{name}
 Group:          Development/Java
+Provides:       itext2-manual = %{epoch}:%{version}-%{release}
+Obsoletes:      itext2-manual < %{epoch}:%{version}-%{release}
 
 %description manual
 A programming manual for the %{name} package.
