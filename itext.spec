@@ -2,8 +2,8 @@
 %define gcj_support 1
 
 Name:           itext
-Version:        2.0.8
-Release:        %mkrel 0.0.2
+Version:        2.1.0
+Release:        %mkrel 0.0.1
 Epoch:          0
 License:        LGPL
 Summary:        Free Java-PDF library
