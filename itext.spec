@@ -3,7 +3,7 @@
 
 Name:           itext
 Version:        2.1.2
-Release:        %mkrel 0.0.1
+Release:        %mkrel 0.0.2
 Epoch:          0
 License:        LGPL
 Summary:        Free Java-PDF library
@@ -60,12 +60,14 @@ A programming manual for the %{name} package.
 
 %{__mkdir_p} src/META-INF
 cp %{SOURCE2} src/META-INF/MANIFEST.MF
+
+%{__mkdir_p} lib
+
 %{__perl} -pi -e 's/<link.*$//' src/ant/site.xml
 %{__perl} -pi -e 's/<attribute name="Class-Path".*$//' src/ant/compile.xml
 %{__perl} -pi -e 's/\r$//g' www/examples/com/lowagie/examples/forms/fill/register.xfdf
 
 %build
-%{__mkdir_p} lib
 pushd src
 export CLASSPATH=$(build-classpath bcprov bcmail)
 export OPT_JAR_LIST="`%{__cat} %{_sysconfdir}/ant.d/trax`"
