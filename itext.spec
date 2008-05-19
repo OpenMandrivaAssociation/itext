@@ -2,14 +2,14 @@
 %define gcj_support 1
 
 Name:           itext
-Version:        2.1.0
+Version:        2.1.2
 Release:        %mkrel 0.0.1
 Epoch:          0
 License:        LGPL
 Summary:        Free Java-PDF library
 URL:            http://www.lowagie.com/iText/
 Group:          Development/Java
-Source0:        http://downloads.sourceforge.net/itext/iText-src-%{version}.tar.gz
+Source0:        http://downloads.sourceforge.net/itext/iText-src-%{version}u.tar.gz
 Source1:        itext-www-20070221.tar.bz2
 Source2:        itext-1.4-manifest.mf
 Requires:       bouncycastle
@@ -55,12 +55,11 @@ Obsoletes:      itext2-manual < %{epoch}:%{version}-%{release}
 A programming manual for the %{name} package.
 
 %prep
-%setup -q -c -T -n itext
+%setup -q -c
+%setup -q -D -T -a 1
+
 %{__mkdir_p} src/META-INF
-(cd src
-%{__tar} xf %{SOURCE0})
 cp %{SOURCE2} src/META-INF/MANIFEST.MF
-%{__tar} xf %{SOURCE1}
 %{__perl} -pi -e 's/<link.*$//' src/ant/site.xml
 %{__perl} -pi -e 's/<attribute name="Class-Path".*$//' src/ant/compile.xml
 %{__perl} -pi -e 's/\r$//g' www/examples/com/lowagie/examples/forms/fill/register.xfdf
