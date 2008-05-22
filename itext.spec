@@ -1,5 +1,5 @@
 %define section free
-%define gcj_support 1
+%define gcj_support 0
 
 Name:           itext
 Version:        2.1.2
@@ -82,9 +82,7 @@ popd
 %{__cp} -a lib/iText.jar %{buildroot}%{_javadir}/%{name}-%{version}.jar
 (cd %{buildroot}%{_javadir} && for jar in *-%{version}.jar; do %{__ln_s} ${jar} `echo ${jar} | %{__sed} "s|-%{version}||g"`; done)
 
-%if %{gcj_support}
-%{_bindir}/aot-compile-rpm
-%endif
+%{gcj_compile}
 
 %{__perl} -pi -e 's/\r$//g' build/lowagie/*.{txt,xml}
 %{__perl} -pi -e 's/\r$//g' build/lowagie/ant/*.xml
