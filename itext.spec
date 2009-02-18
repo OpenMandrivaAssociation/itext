@@ -2,7 +2,7 @@
 %define gcj_support 0
 
 Name:           itext
-Version:        2.1.3
+Version:        2.1.4
 Release:        %mkrel 0.0.1
 Epoch:          0
 License:        LGPL
@@ -28,12 +28,12 @@ BuildArch:      noarch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 
 %description
-iText is a library that allows you to generate PDF files on the fly. The 
-iText classes are very useful for people who need to generate read-only, 
-platform independent documents containing text, lists, tables and 
-images. The library is especially useful in combination with Java(TM) 
-technology-based Servlets: The look and feel of HTML is browser 
-dependent; with iText and PDF you can control exactly how your servlet's 
+iText is a library that allows you to generate PDF files on the fly. The
+iText classes are very useful for people who need to generate read-only,
+platform independent documents containing text, lists, tables and
+images. The library is especially useful in combination with Java(TM)
+technology-based Servlets: The look and feel of HTML is browser
+dependent; with iText and PDF you can control exactly how your servlet's
 output will look.
 
 %package javadoc
