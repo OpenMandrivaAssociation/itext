@@ -3,7 +3,7 @@
 
 Name:           itext
 Version:        2.1.5
-Release:        %mkrel 1
+Release:        %mkrel 2
 Epoch:          0
 License:        LGPL
 Summary:        Free Java-PDF library
