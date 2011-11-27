@@ -3,7 +3,7 @@
 
 Name:           itext
 Version:        2.1.7
-Release:        4
+Release:        6
 License:        (LGPLv2+ or MPLv1.1) and ASL 2.0 and BSD and LGPLv2+
 Summary:        A Free Java-PDF library
 Url:            http://www.lowagie.com/iText/
