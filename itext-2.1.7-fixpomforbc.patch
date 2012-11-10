@@ -1,0 +1,35 @@
+diff -up ./JPP-itext.pom.orig ./JPP-itext.pom
+--- ./JPP-itext.pom.orig	2009-08-27 13:58:26.000000000 -0400
++++ ./JPP-itext.pom	2009-08-27 13:58:45.000000000 -0400
+@@ -65,18 +65,18 @@
+ 	</scm>
+ 	<dependencies>
+ 		<dependency>
+-			<groupId>bouncycastle</groupId>
+-			<artifactId>bcmail-jdk14</artifactId>
++			<groupId>org.bouncycastle</groupId>
++			<artifactId>bcmail-jdk16</artifactId>
+ 			<version>138</version>
+ 		</dependency>
+ 		<dependency>
+-			<groupId>bouncycastle</groupId>
+-			<artifactId>bcprov-jdk14</artifactId>
++			<groupId>org.bouncycastle</groupId>
++			<artifactId>bcprov-jdk16</artifactId>
+ 			<version>138</version>
+ 		</dependency>
+ 		<dependency>
+-			<groupId>bouncycastle</groupId>
+-			<artifactId>bctsp-jdk14</artifactId>
++			<groupId>org.bouncycastle</groupId>
++			<artifactId>bctsp-jdk16</artifactId>
+ 			<version>138</version>
+ 		</dependency>
+ 	</dependencies>
+@@ -97,4 +97,4 @@
+ 			</plugin>
+ 		</plugins>
+ 	</build>
+-</project>
+\ No newline at end of file
++</project>
