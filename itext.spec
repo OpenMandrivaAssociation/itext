@@ -1,240 +1,285 @@
-%define _mavenpomdir %{_datadir}/maven2/poms
-%define alternate_name iText
+%define section free
+%define gcj_support 0
 
 Name:           itext
-Version:        2.1.7
-Release:        6
-License:        (LGPLv2+ or MPLv1.1) and ASL 2.0 and BSD and LGPLv2+
-Summary:        A Free Java-PDF library
-Url:            http://www.lowagie.com/iText/
-Group:          Development/Java 
-Source0:        http://downloads.sourceforge.net/itext/iText-src-%{version}.tar.bz2
-Source2:        http://repo2.maven.org/maven2/com/lowagie/itext/%{version}/itext-%{version}.pom
-Source3:        itext-rups.sh
-Source4:        itext-rups.desktop
-Source5:        itext-toolbox.sh
-Source6:        itext-toolbox.desktop
-Patch1:         itext-2.1.5-pdftk.patch
-
-# The iText POM specifies that it requires bouncycastle's "jdk14" JARs
-# but we have "jdk16".
-Patch2:         itext-2.1.7-fixpomforbc.patch
-# Maven's Doxia plugin explicitly requires these XML output interfaces
-# of iText.  They were removed in iText 1.4.4 [1].  iText versions prior
-# to 1.5.x had questionable licensing [2] so rather than try to create
-# an itext1 package, I have forward-ported these classes.  The doxia
-# developers have told me on IRC on 2009-08-27 that the iText dependency
-# will likely be deprecated meaning we won't have to keep these forever.
-#
-# I've opened a bug with iText:
-#
-# https://sourceforge.net/tracker/?func=detail&aid=2846427&group_id=15255&atid=365255
-#
-# and commented on the Doxia but related to this:
-#
-# http://jira.codehaus.org/browse/DOXIA-53
-#
-# -- Andrew Overholt, 2009-08-28
-#
-# [1]
-# http://www.1t3xt.com/about/history.php?branch=history.10&node=14
-# [2]
-# https://bugzilla.redhat.com/show_bug.cgi?id=236309
-Patch3:         itext-xmloutput.patch.bz2
-
+Version:        2.1.5
+Release:        2
+Epoch:          0
+License:        LGPL
+Summary:        Free Java-PDF library
+URL:            http://www.lowagie.com/iText/
+Group:          Development/Java
+Source0:        http://downloads.sourceforge.net/itext/iText-src-%{version}.tar.gz
+Source1:        itext-www-20070221.tar.bz2
+Source2:        itext-1.4-manifest.mf
+Requires:       bouncycastle
+Requires:       bouncycastle-extras
+Provides:       itext2 = %{epoch}:%{version}-%{release}
+Obsoletes:      itext2 < %{epoch}:%{version}-%{release}
+BuildRequires:  java-rpmbuild
 BuildRequires:  ant
-BuildRequires:  bouncycastle-tsp
-BuildRequires:  desktop-file-utils
-BuildRequires:  dom4j
-BuildRequires:  ImageMagick
-BuildRequires:  mozilla-nss
-BuildRequires:  pdf-renderer
-BuildRequires:  java-devel >= 0:1.6.0
-BuildRequires:  jpackage-utils
-Requires:       bouncycastle-tsp
-Requires:       java >= 0:1.6.0
-Requires:       jpackage-utils >= 1.5
-BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+BuildRequires:  ant-trax
+BuildRequires:  bouncycastle
+BuildRequires:  bouncycastle-extras
+BuildRequires:  xalan-j2
+%if %{gcj_support}
+BuildRequires:  java-gcj-compat-devel
+%else
 BuildArch:      noarch
-Requires(post):   jpackage-utils >= 1.7
-Requires(postun): jpackage-utils >= 1.7
-Provides:         %{alternate_name} == %{version}-%{release}
+%endif
 
 %description
-iText is a library that allows you to generate PDF files on the fly. The iText
-classes are very useful for people who need to generate read-only, platform
-independent documents containing text, lists, tables and images. The library is
-especially useful in combination with Java(TM) technology-based Servlets: The
-look and feel of HTML is browser dependent; with iText and PDF you can control
-exactly how your servlet's output will look.
-
-%package rtf
-License:        MPLv1.1 or LGPLv2+
-Summary:        Library to output Rich Text Files
-Group:          Development/Java 
-Requires:       %{name} = %{version}-%{release}
-
-%description rtf
-The RTF package is an extension of the iText library and allows iText to output
-Rich Text Files in additon to PDF files. These files can then be viewed and
-edited with RTF viewers such as OpenOffice.org Writer.
-
-%package rups
-License:        LGPLv2+ and CC-BY
-Summary:        Reading/Updating PDF Syntax
-Group:          Development/Java 
-Requires:       %{name} = %{version}-%{release}
-Requires:       dom4j
-Requires:       pdf-renderer
-
-%description rups
-iText RUPS is a tool that combines SUN's PDF Renderer (to view PDF documents),
-iText's PdfReader (to inspect the internal structure of a PDF file), and
-iText's PdfStamper to manipulate a PDF file.
-
-%package toolbox
-License:        MPLv1.1 or MIT
-Summary:        Some %{alternate_name} tools
-Group:          Development/Java 
-Requires:       %{name} = %{version}-%{release}
-Requires:       java >= 0:1.6.0
-
-%description toolbox
-iText is a free open source Java-PDF library released on SF under the MPL/LGPL;
-iText comes with a simple GUI: the iText toolbox. The original developers of
-iText want to publish this toolbox as a separate project under the more
-permissive MIT license. This is a utility that allows you to use a number of
-iText tools.
+iText is a library that allows you to generate PDF files on the fly. The
+iText classes are very useful for people who need to generate read-only,
+platform independent documents containing text, lists, tables and
+images. The library is especially useful in combination with Java(TM)
+technology-based Servlets: The look and feel of HTML is browser
+dependent; with iText and PDF you can control exactly how your servlet's
+output will look.
 
 %package javadoc
-Summary:        Javadoc for %{alternate_name}
-Group:          Development/Java 
-Requires:       %{name} = %{version}-%{release}
-Requires:       jpackage-utils
+Summary:        Javadoc for %{name}
+Group:          Development/Java
+Provides:       itext2-javadoc = %{epoch}:%{version}-%{release}
+Obsoletes:      itext2-javadoc < %{epoch}:%{version}-%{release}
 
 %description javadoc
-API documentation for the %{alternate_name} package.
+API documentation for the %{name} package.
+
+%package manual
+Summary:        Documents for %{name}
+Group:          Development/Java
+Provides:       itext2-manual = %{epoch}:%{version}-%{release}
+Obsoletes:      itext2-manual < %{epoch}:%{version}-%{release}
+
+%description manual
+A programming manual for the %{name} package.
 
 %prep
-%setup -q -c -T -a 0
-%patch1 -p1 -b .pdftk
-cp -pr %{SOURCE2} JPP-itext.pom
-%patch2 -p0 -b .fixpomforbc
-%patch3 -p0 -b .xmloutput
+%setup -q -c
+%setup -q -D -T -a 1
 
-# Remove preshipped binaries
-find . -name "*.jar" -exec rm {} \;
+%{__mkdir_p} src/META-INF
+cp %{SOURCE2} src/META-INF/MANIFEST.MF
 
-# Fix encoding issues
-sed 's/\r//' src/rups/com/lowagie/rups/view/icons/copyright_notice.txt > tmpfile
-touch -r src/rups/com/lowagie/rups/view/icons/copyright_notice.txt tmpfile
-mv -f tmpfile src/rups/com/lowagie/rups/view/icons/copyright_notice.txt
+%{__mkdir_p} lib
 
-mkdir lib
-build-jar-repository -s -p lib bcprov bcmail bctsp pdf-renderer dom4j
-
-# Remove jdk & version numbers from classpath entries
-for file in src/ant/{*,.ant*}; do
- for jarname in bcmail bcprov bctsp dom4j; do
-  sed -i "s|$jarname-.*\.jar|$jarname.jar|" $file
- done
-done
-
-# Remove classpath elements from manifest
-sed -i '\|Class-Path|d' src/ant/compile.xml
-
-# Setting debug="on" on javac part of the build script.
-sed -i 's|destdir|debug="on" destdir|g' src/ant/compile.xml
-sed -i 's|debug="true"||g' src/ant/compile.xml
+%{__perl} -pi -e 's/<link.*$//' src/ant/site.xml
+%{__perl} -pi -e 's/<attribute name="Class-Path".*$//' src/ant/compile.xml
+%{__perl} -pi -e 's/\r$//g' www/examples/com/lowagie/examples/forms/fill/register.xfdf
 
 %build
-export CLASSPATH=$(build-classpath bcprov bcmail bctsp pdf-renderer dom4j)
 pushd src
-ant jar jar.rups jar.rtf jar.toolbox javadoc
+export CLASSPATH=$(build-classpath bcprov bcmail)
+export OPT_JAR_LIST="`%{__cat} %{_sysconfdir}/ant.d/trax`"
+%{ant} jar javadoc tutorial lowagie.com
 popd
 
 %install
-export NO_BRP_CHECK_BYTECODE_VERSION=true
 # jars
-mkdir -p %{buildroot}%{_javadir}
-cp -p lib/iText.jar \
-      %{buildroot}%{_javadir}/%{name}-%{version}.jar
-cp -p lib/iText-rtf.jar \
-      %{buildroot}%{_javadir}/%{name}-rtf-%{version}.jar
-cp -p lib/iText-rups.jar \
-      %{buildroot}%{_javadir}/%{name}-rups-%{version}.jar
-cp -p lib/iText-toolbox.jar \
-      %{buildroot}%{_javadir}/%{name}-toolbox-%{version}.jar
-(cd %{buildroot}%{_javadir} && for jar in *-%{version}.jar; do \
-      ln -sf ${jar} `echo $jar| sed "s|-%{version}||g"`; done)
+%{__mkdir_p} %{buildroot}%{_javadir}
+%{__cp} -a lib/iText.jar %{buildroot}%{_javadir}/%{name}-%{version}.jar
+(cd %{buildroot}%{_javadir} && for jar in *-%{version}.jar; do %{__ln_s} ${jar} `echo ${jar} | %{__sed} "s|-%{version}||g"`; done)
 
-# rups stuff
-install -D -pm 755 %{SOURCE3} %{buildroot}%{_bindir}/%{name}-rups
-install -D -m 0755 %{SOURCE4} %{buildroot}%{_datadir}/applications/itext-rups.desktop
+%{gcj_compile}
 
-# toolbox stuff
-install -D -pm 755 %{SOURCE5} %{buildroot}%{_bindir}/%{name}-toolbox
-install -D -m 0755 %{SOURCE6} %{buildroot}%{_datadir}/applications/itext-toolbox.desktop
-
-# icon for rups and toolbox
-mkdir -p %{buildroot}%{_datadir}/icons/hicolor/128x128/apps
-convert -resize 128x128 src/toolbox/com/lowagie/toolbox/1t3xt.gif %{name}.png
-cp -a %{name}.png \
-      %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/%{name}-rups.png
-cp -a %{name}.png \
-      %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/%{name}-toolbox.png
+%{__perl} -pi -e 's/\r$//g' build/lowagie/*.{txt,xml}
+%{__perl} -pi -e 's/\r$//g' build/lowagie/ant/*.xml
+%{__perl} -pi -e 's/\r$//g' build/lowagie/ant/.ant.properties
 
 # javadoc
-mkdir -p %{buildroot}%{_javadocdir}/%{name}
-cp -pr build/docs/* %{buildroot}%{_javadocdir}/%{name}
+%{__mkdir_p} %{buildroot}%{_javadocdir}/%{name}-%{version}
+#cp -a build/docs/* %{buildroot}%{_javadocdir}/%{name}-%{version}
+(cd %{buildroot}%{_javadocdir} && %{__ln_s} %{name}-%{version} %{name})
 
-# Install the pom
-install -dm 755 %{buildroot}%{_datadir}/maven2/poms
-cp -pr JPP-itext.pom %{buildroot}%{_mavenpomdir}
-%add_to_maven_depmap itext itext %{version} JPP itext
-%add_to_maven_depmap com.lowagie itext %{version} JPP itext
+# manual
+%{__mkdir_p} %{buildroot}%{_docdir}/%{name}-%{version}
+cp -a build/lowagie/* %{buildroot}%{_docdir}/%{name}-%{version}
+cp -a build/examples %{buildroot}%{_docdir}/%{name}-%{version}
+cp -a build/tutorial %{buildroot}%{_docdir}/%{name}-%{version}
 
+%if %{gcj_support}
 %post
-%update_maven_depmap
+%{update_gcjdb}
 
 %postun
-%update_maven_depmap
+%{clean_gcjdb}
+%endif
 
 %files
 %defattr(0644,root,root,0755)
-%doc build/bin/com/lowagie/text/{apache_license,lgpl,misc_licenses,MPL-1.1}.txt
-%{_javadir}/%{name}.jar
-%{_javadir}/%{name}-%{version}.jar
-%{_mavenpomdir}/JPP-itext.pom
-%config %{_mavendepmapfragdir}/%{name}
-
-%files rtf
-%defattr(0644,root,root,0755)
-%{_javadir}/%{name}-rtf.jar
-%{_javadir}/%{name}-rtf-%{version}.jar
-
-%files rups
-%defattr(0644,root,root,0755)
-%doc src/rups/com/lowagie/rups/view/icons/copyright_notice.txt
-%dir %{_datadir}/icons/hicolor
-%{_javadir}/%{name}-rups.jar
-%{_javadir}/%{name}-rups-%{version}.jar
-%attr(0755,root,root) %{_bindir}/%{name}-rups
-%{_datadir}/applications/%{name}-rups.desktop
-%{_datadir}/icons/hicolor/*
-
-%files toolbox
-%defattr(0644,root,root,0755)
-%doc src/toolbox/com/lowagie/toolbox/tools.txt
-%dir %{_datadir}/icons/hicolor
-%{_javadir}/%{name}-toolbox.jar
-%{_javadir}/%{name}-toolbox-%{version}.jar
-%attr(0755,root,root) %{_bindir}/%{name}-toolbox
-%{_datadir}/applications/%{name}-toolbox.desktop
-%{_datadir}/icons/hicolor/*
-#%{_datadir}/icons/hicolor/128x128/apps/%{name}-toolbox.png
+%doc %{_docdir}/%{name}-%{version}/MPL-1.1.txt
+%doc %{_docdir}/%{name}-%{version}/lgpl.txt
+%{_javadir}/*
+%if %{gcj_support}
+%dir %{_libdir}/gcj/%{name}
+%{_libdir}/gcj/%{name}/*
+%endif
 
 %files javadoc
 %defattr(0644,root,root,0755)
-%{_javadocdir}/%{name}
+%doc %{_javadocdir}/%{name}-%{version}
+%doc %{_javadocdir}/%{name}
+
+%files manual
+%defattr(0644,root,root,0755)
+%doc %{_docdir}/*
+%exclude %{_docdir}/%{name}-%{version}/*.txt
+
+%changelog
+* Sun Mar 08 2009 Frederik Himpe <fhimpe@mandriva.org> 0:2.1.5-1mdv2009.1
++ Revision: 352880
+- update to new version 2.1.5
+
+* Wed Feb 18 2009 Jérôme Soyer <saispo@mandriva.org> 0:2.1.4-0.0.1mdv2009.1
++ Revision: 342309
+- New upstream release
+
+* Sun Jul 13 2008 Alexander Kurtakov <akurtakov@mandriva.org> 0:2.1.3-0.0.1mdv2009.0
++ Revision: 234258
+- new version 2.1.3
+
+* Fri May 23 2008 Alexander Kurtakov <akurtakov@mandriva.org> 0:2.1.2-0.0.2mdv2009.0
++ Revision: 210151
+- disable gcj compile
+
+  + David Walluck <walluck@mandriva.org>
+    - move mkdir to %%prep
+    - 2.1.2u
+
+* Mon Apr 14 2008 Alexander Kurtakov <akurtakov@mandriva.org> 0:2.1.0-0.0.1mdv2009.0
++ Revision: 193443
+- new version
+
+* Fri Jan 25 2008 David Walluck <walluck@mandriva.org> 0:2.0.8-0.0.2mdv2008.1
++ Revision: 158083
+- obsolete itext2 subpackage as well
+
+* Fri Jan 25 2008 Alexander Kurtakov <akurtakov@mandriva.org> 0:2.0.8-0.0.1mdv2008.1
++ Revision: 157919
+- new release
+
+  + Olivier Blin <oblin@mandriva.com>
+    - restore BuildRoot
+
+* Mon Dec 31 2007 David Walluck <walluck@mandriva.org> 0:2.0.7-0.0.4mdv2008.1
++ Revision: 139929
+- add itext2 Provides/Obsoletes
+- set OPT_JAR_LIST better
+- more macros
+
+* Thu Dec 20 2007 David Walluck <walluck@mandriva.org> 0:2.0.7-0.0.3mdv2008.1
++ Revision: 135375
+- there are no jars to remove
+- fix syntax error in spec
+- fix bouncycastle (Build)Requires
+
+  + Thierry Vignaud <tvignaud@mandriva.com>
+    - kill re-definition of %%buildroot on Pixel's request
+
+  + Anssi Hannula <anssi@mandriva.org>
+    - buildrequire java-rpmbuild, i.e. build with icedtea on x86(_64)
+
+* Thu Nov 29 2007 Alexander Kurtakov <akurtakov@mandriva.org> 0:2.0.7-0.0.1mdv2008.1
++ Revision: 113887
+- new version
+
+* Sat Oct 13 2007 David Walluck <walluck@mandriva.org> 0:2.0.6-1mdv2008.1
++ Revision: 97842
+- add sources
+- 2.0.6
+
+* Mon Sep 17 2007 David Walluck <walluck@mandriva.org> 0:2.0.5-1mdv2008.1
++ Revision: 89365
+- 2.0.5
+
+* Sat Sep 15 2007 Anssi Hannula <anssi@mandriva.org> 0:2.0.4-3mdv2008.0
++ Revision: 87394
+- rebuild to filter out autorequires of GCJ AOT objects
+- remove unnecessary Requires(post) on java-gcj-compat
+
+* Sun Sep 09 2007 Pascal Terjan <pterjan@mandriva.org> 0:2.0.4-2mdv2008.0
++ Revision: 82854
+- rebuild
+
+* Mon Jun 04 2007 David Walluck <walluck@mandriva.org> 0:2.0.4-1mdv2008.0
++ Revision: 35251
+- 2.0.4
+
+* Tue Apr 17 2007 David Walluck <walluck@mandriva.org> 0:2.0.2-1mdv2008.0
++ Revision: 14114
+- 2.0.2
+
+
+* Tue Dec 19 2006 David Walluck <walluck@mandriva.org> 1.4.8-1mdv2007.0
++ Revision: 100231
+- 1.4.8
+
+* Mon Dec 11 2006 David Walluck <walluck@mandriva.org> 0:1.4.7-1mdv2007.1
++ Revision: 95103
+- 1.4.7
+
+* Tue Oct 31 2006 David Walluck <walluck@mandriva.org> 0:1.4.6-1mdv2007.1
++ Revision: 73920
+- 1.4.6
+- Import itext
+
+* Sat Sep 16 2006 David Walluck <walluck@mandriva.org> 0:1.4.5-1mdv2007.0
+- 1.4.5
+
+* Tue Sep 05 2006 David Walluck <walluck@mandriva.org> 0:1.4.4-1mdv2007.0
+- 1.4.4
+
+* Tue Aug 29 2006 David Walluck <walluck@mandriva.org> 0:1.4.3-2mdv2007.0
+- 1.4.4
+- do not require dos2unix for build
+
+* Wed Aug 09 2006 David Walluck <walluck@mandriva.org> 0:1.4.3-1mdv2007.0
+- 1.4.3
+
+* Tue Jun 06 2006 David Walluck <walluck@mandriva.org> 0:1.3-1.8.1mdv2007.0
+- release
+
+* Tue Feb 28 2006 Anthony Green <green@redhat.com> - 1.3-1jpp_8
+- Rebuild with new compiler.
+
+* Tue Jan 17 2006 Anthony Green <green@redhat.com> - 1.3-1jpp_6
+- Remove epoch from changelog versions.
+
+* Mon Jan 16 2006 Anthony Green <green@redhat.com> - 1.3-1jpp_5
+- Remove empty /usr/share/java/itext.
+- Move manual and javadoc packages to Documentation group.
+- Add itext-no-javadoc-web-links.patch.
+
+* Mon Jan 16 2006 Anthony Green <green@redhat.com> - 1.3-1jpp_4
+- Fixed Group.
+- Cleaned up changelog versions.
+- Use dos2unix on doc files.
+- Don't create unversioned javadoc link.
+
+* Fri Jan 13 2006 Anthony Green <green@redhat.com> - 1.3-1jpp_3
+- Remove javadoc %%postun, as that should get handled by the fact
+  that the file is ghosted.
+- Improve javadoc and manual subpackage descriptions.
+
+* Wed Jan 04 2006 Anthony Green <green@redhat.com> - 1.3-1jpp_2
+- Add ant-trax and jaxp_transform_impl dependencies.
+- Set OPT_JAR_LIST.
+
+* Wed Jan 04 2006 Anthony Green <green@redhat.com> - 1.3-1jpp_1
+- Build native code.
+- Add patch to remove proprietary jpeg encoding library usage.
+- Fix BuildRequires.
+- Tweak BuildRoot.
+
+* Sat Aug 27 2005 Ralph Apel <r.apel at r-apel.de> - 1.3-1jpp
+- Upgrade to 1.3
+- Now one jar only
+
+* Thu Aug 26 2004 Ralph Apel <r.apel at r-apel.de> - 1.02b-2jpp
+- Build with ant-1.6.2
+- Relax some versioned dependencies
+
+* Fri Feb 27 2004 Ralph Apel <r.apel at r-apel.de> - 1.02b-1jpp
+- First JPackage release
 
