@@ -1,0 +1,11 @@
+--- ./src/rtf/com/lowagie/text/rtf/parser/destinations/RtfDestinationStylesheetTable.java.orig	2011-11-30 13:55:58.490387384 -0500
++++ ./src/rtf/com/lowagie/text/rtf/parser/destinations/RtfDestinationStylesheetTable.java	2011-11-30 13:55:13.465100610 -0500
+@@ -91,7 +91,7 @@ public class RtfDestinationStylesheetTab
+ 	 */
+ 	private int alignment = Element.ALIGN_LEFT;
+ 	/**
++	 * Percentage of line occupied by Kashida justification (0 low, 10 medium, 20 high).
+-	 * Percentage of line occupied by Kashida justification (0 � low, 10 � medium, 20 � high).
+ 	 * \qkN
+ 	 */
+ 	private int justificationPercentage = 0;
