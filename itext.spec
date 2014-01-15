@@ -1,6 +1,10 @@
 %{?_javapackages_macros:%_javapackages_macros}
+%if 0%{?fedora}
 %if ! 0%{?rhel}
 %global with_gcj %{!?_without_gcj:1}%{?_without_gcj:0}
+%else
+%global with_gcj 0
+%endif
 %else
 %global with_gcj 0
 %endif
