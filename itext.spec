@@ -68,7 +68,11 @@ BuildRequires:    ant
 BuildRequires:    bouncycastle-tsp >= 1.46-4
 BuildRequires:    desktop-file-utils
 BuildRequires:    dom4j
+%if 0%{?fedora}
 BuildRequires:    ImageMagick
+%else
+BuildRequires:    imagemagick
+%endif
 BuildRequires:    pdf-renderer
 BuildRequires:    java-devel >= 1.7
 BuildRequires:    jpackage-utils
