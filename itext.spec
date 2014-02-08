@@ -4,7 +4,7 @@
 Summary:	Free Java-PDF library
 Name:		itext
 Version:	2.1.5
-Release:	2
+Release:	3
 License:	LGPLv2
 Group:		Development/Java
 Url:		http://www.lowagie.com/iText/
