@@ -1,0 +1,15 @@
+--- src/ant/compile.xml.orig	2011-11-25 14:53:14.200067261 -0500
++++ src/ant/compile.xml	2011-11-25 14:54:45.952514299 -0500
+@@ -97,11 +97,7 @@
+                 <include name="**/*.txt"/>
+             </fileset>
+         </copy>
+-        <jar jarfile="${itext.jar}" basedir="${itext.bin}">
+-            <manifest>
+-                <attribute name="Main-Class" value="com.lowagie.tools.ToolboxAvailable"/>
+-                <!-- <attribute name="Class-Path" value="iText-toolbox.jar iText-toolbox-${releasenumber}.jar ${lib.bcmail} ${lib.bcprov} ${lib.bctsp}"/> -->
+-            </manifest>
++        <jar jarfile="${itext.jar}" basedir="${itext.bin}" manifest="./MANIFEST.MF">
+         </jar>
+     </target>
+ 
