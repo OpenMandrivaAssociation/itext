@@ -1,3 +1,7 @@
 sources:
   export-manifest.tar: 44d362d92056bbe0d4c8b2cc59daa992d0941836
   iText-src-2.1.7.tar.gz: f4b3e7c44caa4dcb5ea6bc08fb8a32516f82f1c3
+  itext-2.1.7.pom: 4f01980bf51fc9125ac82625af9d774ba04847b9
+  itext-2.1.7.tar.xz: 15a3c2a1ad90979ad91150fe3338a912cbd4c218
+  itext-rtf-2.1.7.pom: b186b89314a97bcda3095fe167ae1387e5388462
+  itext-rups-2.1.7.pom: 13e88281121802600fbb98928eeedd39923507a5

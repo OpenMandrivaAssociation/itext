@@ -1,19 +1,10 @@
 %{?_javapackages_macros:%_javapackages_macros}
-%if 0%{?fedora}
-%if ! 0%{?rhel}
-%global with_gcj %{!?_without_gcj:1}%{?_without_gcj:0}
-%else
-%global with_gcj 0
-%endif
-%else
-%global with_gcj 0
-%endif
 %global alternate_name iText
 
 Summary:          A Free Java-PDF library
 Name:             itext
 Version:          2.1.7
-Release:          21.0%{?dist}
+Release:          27.1
 #src/toolbox/com/lowagie/toolbox/Versions.java is MPLv1.1 or MIT
 #src/toolbox/com/lowagie/toolbox/plugins/XML2Bookmarks.java is MPLv1.1 or LGPLv2+
 #src/rups/com/lowagie/rups/Rups.java is LGPLv2+
@@ -25,8 +16,9 @@ Release:          21.0%{?dist}
 #src/core/com/lowagie/text/pdf/codec/TIFFConstants.java is under libtiff
 License:          (LGPLv2+ or MPLv1.1) and ASL 2.0 and BSD and LGPLv2+ and (MPLv1.1 or MIT) and CC-BY and APAFML and libtiff
 URL:              http://www.lowagie.com/iText/
-
-Source0:          http://downloads.sourceforge.net/itext/iText-src-%{version}.tar.gz
+Group:            Development/Java
+# sh itext-create-tarball.sh 2.1.7
+Source0:          %{name}-%{version}.tar.xz
 Source2:          http://repo2.maven.org/maven2/com/lowagie/itext/%{version}/itext-%{version}.pom
 Source3:          itext-rups.sh
 Source4:          itext-rups.desktop
@@ -37,11 +29,12 @@ Source6:          itext-toolbox.desktop
 Source7:          export-manifest.tar
 Source8:          http://repo2.maven.org/maven2/com/lowagie/itext-rtf/%{version}/itext-rtf-%{version}.pom
 Source9:          http://repo2.maven.org/maven2/com/lowagie/itext-rups/%{version}/itext-rups-%{version}.pom
+Source10:         itext-create-tarball.sh
 Patch1:           itext-2.1.5-pdftk.patch
 
 # The iText POM specifies that it requires bouncycastle's "jdk14" JARs
 # but we have "jdk16".
-Patch2:           itext-2.1.7-fixpomforbc.patch
+#Patch2:           itext-2.1.7-fixpomforbc.patch
 # Maven's Doxia plugin explicitly requires these XML output interfaces
 # of iText.  They were removed in iText 1.4.4 [1].  iText versions prior
 # to 1.5.x had questionable licensing [2] so rather than try to create
@@ -67,27 +60,21 @@ Patch3:           itext-xmloutput.patch
 # Use orbit manifest so the manifest exports packages properly.
 Patch4:           itext-manifest.patch
 Patch5:           itext-remove-unmappable.patch
+# Port to bouncycastle 1.50 Thanks to Michal Srb
+Patch6:           0001-Port-to-bouncycastle-1.50.patch
 
 BuildRequires:    ant
-BuildRequires:    bouncycastle-tsp >= 1.46-4
+BuildRequires:    bouncycastle-mail >= 1.50
+BuildRequires:    bouncycastle-pkix >= 1.50
 BuildRequires:    desktop-file-utils
 BuildRequires:    dom4j
-%if 0%{?fedora}
-BuildRequires:    ImageMagick
-%else
 BuildRequires:    imagemagick
-%endif
 BuildRequires:    pdf-renderer
 BuildRequires:    java-devel >= 1.7
 BuildRequires:    jpackage-utils
-%if %{with_gcj}
-BuildRequires:    java-gcj-compat-devel
-Requires(post):   java-gcj-compat
-Requires(postun): java-gcj-compat
-Requires:         java-1.5.0-gcj
-%else
+
 BuildArch:        noarch
-%endif
+
 Provides:         %{alternate_name} == %{version}-%{release}
 Requires:         %{name}-core = %{version}-%{release}
 
@@ -101,10 +88,10 @@ exactly how your servlet's output will look.
 
 %package core
 Summary:          The core iText Java-PDF library
-
+Group:            Development/Java
 BuildArch:        noarch
-Requires:         bouncycastle-tsp >= 1.46-4
-Requires:         java >= 1.5
+Requires:         bouncycastle-mail >= 1.50
+Requires:         bouncycastle-pkix >= 1.50
 Requires:         jpackage-utils
 Obsoletes:        itext < 2.1.7-12
 
@@ -114,7 +101,7 @@ files.
 
 %package rtf
 Summary:        Library to output Rich Text Files
-
+Group:          Development/Java
 BuildArch:      noarch
 License:        MPLv1.1 or LGPLv2+
 Requires:       %{name}-core = %{version}-%{release}
@@ -126,7 +113,7 @@ edited with RTF viewers such as OpenOffice.org Writer.
 
 %package rups
 Summary:        Reading/Updating PDF Syntax
-
+Group:          Development/Java
 BuildArch:      noarch
 License:        LGPLv2+ and CC-BY
 Requires:       %{name}-core = %{version}-%{release}
@@ -140,11 +127,10 @@ iText's PdfStamper to manipulate a PDF file.
 
 %package toolbox
 Summary:        Some %{alternate_name} tools
-
+Group:          Development/Java
 BuildArch:      noarch
 License:        MPLv1.1 or MIT
 Requires:       %{name} = %{version}-%{release}
-Requires:       java >= 1.5
 
 %description toolbox
 iText is a free open source Java-PDF library released on SF under the MPL/LGPL;
@@ -155,7 +141,7 @@ iText tools.
 
 %package javadoc
 Summary:        Javadoc for %{alternate_name}
-
+Group:          Documentation
 BuildArch:      noarch
 Requires:       %{name}-core = %{version}-%{release}
 Requires:       jpackage-utils
@@ -167,22 +153,29 @@ API documentation for the %{alternate_name} package.
 %prep
 %setup -q -c -T -a 0
 %patch1 -p1 -b .pdftk
-cp -pr %{SOURCE2} JPP-itext.pom
-%patch2 -p0 -b .fixpomforbc
 %patch3 -p0 -b .xmloutput
 %patch4 -p0
 %patch5 -p0
+%patch6 -p1
+
+cp -pr %{SOURCE2} JPP-itext.pom
+%pom_remove_dep bouncycastle:bcmail-jdk14 JPP-itext.pom
+%pom_add_dep org.bouncycastle:bcmail-jdk15on JPP-itext.pom
+%pom_remove_dep bouncycastle:bcprov-jdk14 JPP-itext.pom
+%pom_add_dep org.bouncycastle:bcprov-jdk15on JPP-itext.pom
+%pom_remove_dep bouncycastle:bctsp-jdk14 JPP-itext.pom
+%pom_add_dep org.bouncycastle:bcpkix-jdk15on JPP-itext.pom
 
 cp -pr %{SOURCE8} JPP-%{name}-rtf.pom
 cp -pr %{SOURCE9} JPP-%{name}-rups.pom
 
-for p in JPP-%{name}-rtf.pom JPP-%{name}-rups.pom ; do
-%pom_remove_dep bouncycastle:bcmail-jdk14 ${p}
-%pom_add_dep org.bouncycastle:bcmail-jdk16 ${p}
-%pom_remove_dep bouncycastle:bcprov-jdk14 ${p}
-%pom_add_dep org.bouncycastle:bcprov-jdk16 ${p}
-%pom_remove_dep bouncycastle:bctsp-jdk14 ${p}
-%pom_add_dep org.bouncycastle:bctsp-jdk16 ${p}
+for p in rtf rups ; do
+%pom_remove_dep bouncycastle:bcmail-jdk14 JPP-%{name}-${p}.pom
+%pom_add_dep org.bouncycastle:bcmail-jdk15on JPP-%{name}-${p}.pom
+%pom_remove_dep bouncycastle:bcprov-jdk14 JPP-%{name}-${p}.pom
+%pom_add_dep org.bouncycastle:bcprov-jdk15on JPP-%{name}-${p}.pom
+%pom_remove_dep bouncycastle:bctsp-jdk14 JPP-%{name}-${p}.pom
+%pom_add_dep org.bouncycastle:bcpkix-jdk15on JPP-%{name}-${p}.pom
 done
 
 # move manifest to build area
@@ -198,13 +191,16 @@ touch -r src/rups/com/lowagie/rups/view/icons/copyright_notice.txt tmpfile
 mv -f tmpfile src/rups/com/lowagie/rups/view/icons/copyright_notice.txt
 
 mkdir lib
-build-jar-repository -s -p lib bcprov bcmail bctsp pdf-renderer dom4j
+build-jar-repository -s -p lib bcprov bcmail bcpkix pdf-renderer dom4j
 
 # Remove jdk & version numbers from classpath entries
 for file in src/ant/{*,.ant*}; do
- for jarname in bcmail bcprov bctsp dom4j; do
+ for jarname in bcmail bcprov dom4j; do
   sed -i "s|$jarname-.*\.jar|$jarname.jar|" $file
  done
+done
+for file in src/ant/{*,.ant*}; do
+ sed -i "s|bctsp-.*\.jar|bcpkix.jar|" $file
 done
 
 # Setting debug="on" on javac part of the build script.
@@ -217,7 +213,7 @@ sed -i 's|author|Encoding="ISO-8859-1" author|' src/ant/site.xml
 sed -i 's|maxmemory="128m"|maxmemory="512m"|' src/ant/site.xml
 
 %build
-export CLASSPATH=$(build-classpath bcprov bcmail bctsp pdf-renderer dom4j)
+export CLASSPATH=$(build-classpath bcprov bcmail bcpkix pdf-renderer dom4j)
 pushd src
  ant -Ditext.jdk.core=1.5 \
      -Ditext.jdk.rups=1.5 \
@@ -229,15 +225,13 @@ popd
 # jars
 mkdir -p $RPM_BUILD_ROOT%{_javadir}
 cp -p lib/iText.jar \
-      $RPM_BUILD_ROOT%{_javadir}/%{name}-%{version}.jar
+      $RPM_BUILD_ROOT%{_javadir}/%{name}.jar
 cp -p lib/iText-rtf.jar \
-      $RPM_BUILD_ROOT%{_javadir}/%{name}-rtf-%{version}.jar
+      $RPM_BUILD_ROOT%{_javadir}/%{name}-rtf.jar
 cp -p lib/iText-rups.jar \
-      $RPM_BUILD_ROOT%{_javadir}/%{name}-rups-%{version}.jar
+      $RPM_BUILD_ROOT%{_javadir}/%{name}-rups.jar
 cp -p lib/iText-toolbox.jar \
-      $RPM_BUILD_ROOT%{_javadir}/%{name}-toolbox-%{version}.jar
-(cd $RPM_BUILD_ROOT%{_javadir} && for jar in *-%{version}.jar; do \
-      ln -sf ${jar} `echo $jar| sed "s|-%{version}||g"`; done)
+      $RPM_BUILD_ROOT%{_javadir}/%{name}-toolbox.jar
 
 mkdir -p $RPM_BUILD_ROOT%{_bindir}
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/applications
@@ -261,10 +255,6 @@ cp -a %{name}.png \
 cp -a %{name}.png \
       $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/128x128/apps/%{name}-toolbox.png
 
-%if %{with_gcj}
- RPM_OPT_FLAGS="$RPM_OPT_FLAGS -fno-indirect-classes" %{_bindir}/aot-compile-rpm
-%endif
-      
 # javadoc
 mkdir -p $RPM_BUILD_ROOT%{_javadocdir}/%{name}
 cp -pr build/docs/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}
@@ -278,22 +268,6 @@ cp -pr JPP-%{name}-rtf.pom $RPM_BUILD_ROOT%{_mavenpomdir}
 %add_maven_depmap JPP-%{name}-rtf.pom %{name}-rtf.jar -f rtf
 cp -pr JPP-%{name}-rups.pom $RPM_BUILD_ROOT%{_mavenpomdir}
 %add_maven_depmap JPP-%{name}-rups.pom %{name}-rups.jar  -f rups
-
-%post
-%if %{with_gcj}
- if [ -x %{_bindir}/rebuild-gcj-db ]
- then
-  %{_bindir}/rebuild-gcj-db
- fi
-%endif
-
-%postun
-%if %{with_gcj}
- if [ -x %{_bindir}/rebuild-gcj-db ]
- then
-  %{_bindir}/rebuild-gcj-db
- fi
-%endif
 
 %post rups
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
@@ -321,42 +295,24 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %files
-%if %{with_gcj}
-%dir %{_libdir}/gcj/%{name}
-%{_libdir}/gcj/%{name}/%{name}-%{version}.*
-# We only need the aot bits for the core jar
-%exclude %{_libdir}/gcj/%{name}/%{name}-rtf-%{version}.*
-%exclude %{_libdir}/gcj/%{name}/%{name}-rups-%{version}.*
-%exclude %{_libdir}/gcj/%{name}/%{name}-toolbox-%{version}.*
-%endif
-
-%files core
 %doc build/bin/com/lowagie/text/{apache_license,lgpl,misc_licenses,MPL-1.1}.txt
-%{_javadir}/%{name}.jar
-%{_javadir}/%{name}-%{version}.jar
-%{_mavenpomdir}/JPP-itext.pom
-%{_mavendepmapfragdir}/%{name}
 
-%files rtf
-%{_javadir}/%{name}-rtf.jar
-%{_javadir}/%{name}-rtf-%{version}.jar
-%{_mavenpomdir}/JPP-%{name}-rtf.pom
-%{_mavendepmapfragdir}/%{name}-rtf
+%files core -f .mfiles
+%doc build/bin/com/lowagie/text/{apache_license,lgpl,misc_licenses,MPL-1.1}.txt
 
-%files rups
+%files rtf -f .mfiles-rtf
+%doc build/bin/com/lowagie/text/{lgpl,misc_licenses,MPL-1.1}.txt
+
+%files rups -f .mfiles-rups
 %doc src/rups/com/lowagie/rups/view/icons/copyright_notice.txt
-%{_javadir}/%{name}-rups.jar
-%{_javadir}/%{name}-rups-%{version}.jar
-%{_mavenpomdir}/JPP-%{name}-rups.pom
-%{_mavendepmapfragdir}/%{name}-rups
 %{_bindir}/%{name}-rups
 %{_datadir}/applications/%{name}-rups.desktop
 %{_datadir}/icons/hicolor/128x128/apps/%{name}-rups.png
 
-%files toolbox
+%files toolbox 
+%doc build/bin/com/lowagie/text/{misc_licenses,MPL-1.1}.txt
 %doc src/toolbox/com/lowagie/toolbox/tools.txt
 %{_javadir}/%{name}-toolbox.jar
-%{_javadir}/%{name}-toolbox-%{version}.jar
 %{_bindir}/%{name}-toolbox
 %{_datadir}/applications/%{name}-toolbox.desktop
 %{_datadir}/icons/hicolor/128x128/apps/%{name}-toolbox.png
@@ -368,6 +324,25 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 # -----------------------------------------------------------------------------
 
 %changelog
+* Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.1.7-27
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
+* Fri Mar 28 2014 Michael Simacek <msimacek@redhat.com> - 2.1.7-26
+- Use Requires: java-headless rebuild (#1067528)
+
+* Wed Mar 12 2014 Michal Srb <msrb@redhat.com> - 2.1.7-25
+- Drop GCJ support
+
+* Thu Feb 27 2014 gil cattaneo <puntogil@libero.it> 2.1.7-24
+- Port to bouncycastle 1.50 (Thanks to Michal Srb)
+
+* Thu Nov  7 2013 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.1.7-23
+- Remove versioned JARs
+- Resolves: rhbz#1022106
+
+* Fri Oct 04 2013 gil cattaneo <puntogil@libero.it> 2.1.7-22
+- fix badurl (source file audit - 2013-09-30)
+
 * Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.1.7-21
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
 
@@ -469,8 +444,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 * Sat Oct 11 2008 Orcan Ogetbil <oget[DOT]fedora[AT]gmail[DOT]com> 2.1.3-4
 - Fix more encoding issues.
-
-* Fri Oct 10 2008 Orcan Ogetbil <oget[DOT]fedora[AT]gmail[DOT]com> 2.1.3-3
+ Oct 10 2008 Orcan Ogetbil <oget[DOT]fedora[AT]gmail[DOT]com> 2.1.3-3
 - Included the copyright notice (CC-BY) for the icons among the doc files.
 
 * Thu Oct 09 2008 Orcan Ogetbil <oget[DOT]fedora[AT]gmail[DOT]com> 2.1.3-2
@@ -501,7 +475,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 * Tue Feb 28 2006 Anthony Green <green@redhat.com> - 1.3-1jpp_8
 - Rebuild with new compiler.
 
-* Mon Jan 17 2006 Anthony Green <green@redhat.com> - 1.3-1jpp_6
+* Tue Jan 17 2006 Anthony Green <green@redhat.com> - 1.3-1jpp_6
 - Remove epoch from changelog versions.
 
 * Mon Jan 16 2006 Anthony Green <green@redhat.com> - 1.3-1jpp_5
@@ -515,7 +489,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 - Use dos2unix on doc files.
 - Don't create unversioned javadoc link.
 
-* Thu Jan 13 2006 Anthony Green <green@redhat.com> - 1.3-1jpp_3
+* Fri Jan 13 2006 Anthony Green <green@redhat.com> - 1.3-1jpp_3
 - Remove javadoc %%postun, as that should get handled by the fact
   that the file is ghosted.
 - Improve javadoc and manual subpackage descriptions.
@@ -530,7 +504,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 - Fix BuildRequires.
 - Tweak BuildRoot.
 
-* Thu Aug 26 2005 Ralph Apel <r.apel at r-apel.de> - 1.3-1jpp
+* Fri Aug 26 2005 Ralph Apel <r.apel at r-apel.de> - 1.3-1jpp
 - Upgrade to 1.3
 - Now one jar only
 
@@ -540,3 +514,4 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 * Fri Feb 27 2004 Ralph Apel <r.apel at r-apel.de> - 1.02b-1jpp
 - First JPackage release
+
