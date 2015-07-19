@@ -4,7 +4,7 @@
 Summary:          A Free Java-PDF library
 Name:             itext
 Version:          2.1.7
-Release:          27.1
+Release:          27.2
 #src/toolbox/com/lowagie/toolbox/Versions.java is MPLv1.1 or MIT
 #src/toolbox/com/lowagie/toolbox/plugins/XML2Bookmarks.java is MPLv1.1 or LGPLv2+
 #src/rups/com/lowagie/rups/Rups.java is LGPLv2+
