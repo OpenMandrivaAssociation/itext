@@ -15,7 +15,7 @@ Release:          27.3
 #src/core/com/lowagie/text/pdf/fonts are under APAFML
 #src/core/com/lowagie/text/pdf/codec/TIFFConstants.java is under libtiff
 License:          (LGPLv2+ or MPLv1.1) and ASL 2.0 and BSD and LGPLv2+ and (MPLv1.1 or MIT) and CC-BY and APAFML and libtiff
-URL:              http://www.lowagie.com/iText/
+URL:              https://www.lowagie.com/iText/
 Group:            Development/Java
 # sh itext-create-tarball.sh 2.1.7
 Source0:          %{name}-%{version}.tar.xz
